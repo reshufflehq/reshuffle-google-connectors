@@ -63,8 +63,6 @@ export interface RowChange {
 ##### Example:
 ```js
 const myHandler = (event) => {
-  // event.context is { oldRows, newRows, worksheetsRemoved: WorkSheetChanges[], worksheetsAdded: WorkSheetChanges[], worksheetsChanged: WorkSheetChanges[] }
-  // WorkSheetChanges is { worksheetId, rowsRemoved, rowsAdded, rowsChanged }
   console.log('New rows detected!')
   event.options.sheetIdOrTitle && console.log(`'sheetIdOrTitle' is set in event options so it only checks for changes in sheet ${event.options.sheetIdOrTitle}`)
 
