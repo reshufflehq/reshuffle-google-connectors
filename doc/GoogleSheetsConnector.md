@@ -32,6 +32,34 @@ interface GoogleSheetsConnectorEventOptions {
 }
 ```
 
+Event is an object containing attribute `context`:
+```typescript
+export interface cellValue {
+  headerName: string
+  value: string
+}
+
+export interface context {
+  oldRows: cellValue[]
+  newRows: cellValue[]
+  worksheetsRemoved: WorkSheetChanges[]
+  worksheetsAdded: WorkSheetChanges[]
+  worksheetsChanged: WorkSheetChanges[]
+}
+
+export interface WorkSheetChanges {
+  worksheetId: string
+  rowsRemoved: any[]
+  rowsAdded: any[]
+  rowsChanged: RowChange[]
+}
+
+export interface RowChange {
+  prev: any
+  curr: any
+}
+```
+
 ##### Example:
 ```js
 const myHandler = (event) => {
