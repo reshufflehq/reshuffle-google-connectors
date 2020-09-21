@@ -12,6 +12,7 @@ connectors to some Google Cloud solutions.
 ## Connectors
 
 * [Google Sheets Connector](doc/GoogleSheetsConnector.md)
+* [Google Language Connector](doc/GoogleLanguageConnector.md)
 
 
 ## Learn more
