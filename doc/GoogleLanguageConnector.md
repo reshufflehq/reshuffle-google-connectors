@@ -1,5 +1,9 @@
 # reshuffle-google-language-connector
+`npm install reshuffle-google-connectors`
 
+_Commonjs_: `const { GoogleLanguageConnector } = require('reshuffle-google-connectors')`
+
+_ES6 import_: `import { GoogleLanguageConnector } from 'reshuffle-google-connectors'` 
 ### Reshuffle GoogleLanguageConnector
 
 This connector provides an Interface to the Google Language Client.
