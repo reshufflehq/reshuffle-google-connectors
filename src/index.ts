@@ -1,2 +1,2 @@
-export { GoogleSheetsConnector } from './GoogleSheetsConnector'
-export { GoogleLanguageConnector } from './GoogleLanguageConnector'
+export * from './GoogleSheetsConnector'
+export * from './GoogleLanguageConnector'
