@@ -20,6 +20,7 @@ export class GoogleLanguageConnector extends BaseConnector<
   async analyzeSentiment(
     text: string,
   ): Promise<protos.google.cloud.language.v1.IAnalyzeSentimentResponse> {
+    this.app.getLogger().info(`Google Language - Sentiment Analyzed`)
     const [result] = await this.client.analyzeSentiment({
       document: {
         content: text,
@@ -31,6 +32,7 @@ export class GoogleLanguageConnector extends BaseConnector<
   }
 
   sdk(): v1.LanguageServiceClient {
+    this.app.getLogger().info(`Google Language - SDK Returned`)
     return this.client
   }
 }
