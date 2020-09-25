@@ -31,7 +31,7 @@ Analyzes the sentiment of the provided text
 
 ###### Example
 ```js
-const connector = new GoogleLanguageConnector({ credentials })
+const connector = new GoogleLanguageConnector(app, { credentials })
 const result = await connector.analyzeSentiment("The text I want analyzed")
 console.log("Language:", result.language, " Sentiment score: ", result.documentSentiment.score)
 ```
@@ -49,7 +49,7 @@ const document = {
   content: 'The text I want analyzed',
   type: 'PLAIN_TEXT',
 };
-const connector = new GoogleLanguageConnector({ credentials })
+const connector = new GoogleLanguageConnector(app, { credentials })
 const [result] = await connector.sdk().analyzeEntities({ document });
 const entities = result.entities;
 entities.forEach(entity => {
