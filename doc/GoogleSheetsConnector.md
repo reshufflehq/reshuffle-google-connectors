@@ -2,14 +2,57 @@
 
 `npm install reshuffle-google-sheets-connector`
 
-_Commonjs_: `const { GoogleSheetsConnector } = require('reshuffle-google-connectors')`
 
-_ES6 import_: `import { GoogleSheetsConnector } from 'reshuffle-google-connectors'` 
-
-This connector allows you to Interact with online Google Sheets.
+This is a [Reshuffle](dev.reshuffle.com) connector that allows you to Interact with online Google Sheets.
 
 The connector is designed to work with Google Sheets in the form of a table,
 where the header row (first row) is defined.
+
+The following example listens to changes in online spreadsheet:
+```js
+const { GoogleSheetsConnector } = require('reshuffle-google-connectors')
+
+const myGoogleSheetsConnector = new GoogleSheetsConnector(app, {
+  credentials: {
+    client_email: '<your_client_email>',
+    private_key: '<your_private_key>',
+  },
+  sheetsId: '<your_sheetsId>',
+})
+
+const myHandler = (event) => {
+  // event.context is { oldRows, newRows, worksheetsRemoved: WorkSheetChanges[], worksheetsAdded: WorkSheetChanges[], worksheetsChanged: WorkSheetChanges[] }
+  // WorkSheetChanges is { worksheetId, rowsRemoved, rowsAdded, rowsChanged }
+  console.log('New rows detected!')
+  event.options.sheetIdOrTitle &&
+    console.log(
+      `'sheetIdOrTitle' is set in event options so it only checks for changes in sheet ${event.options.sheetIdOrTitle}`,
+    )
+
+  event.context.newRows.forEach(({ worksheetId, rows }) => {
+    console.log(`workSheetId: ${worksheetId}`)
+
+    rows.forEach((row, index) => {
+      let rowString = `line ${index + 1}\t`
+      Object.values(row).forEach((val) => (rowString += `${val}\t`))
+      console.log(rowString)
+    })
+  })
+
+  event.context.worksheetsChanged[0] &&
+    event.context.worksheetsChanged[0].rowsAdded[0] &&
+    console.log(
+      `Example of new line values ${JSON.stringify(
+        event.context.worksheetsChanged[0].rowsAdded[0],
+      )}`,
+    )
+}
+
+/** Trigger a handler when changes are detected in document <sheetsId> (it will check for changes every 10 seconds) */
+myGoogleSheetsConnector.on({}, myHandler)
+
+app.start()
+```
 
 #### Configuration Options:
 ```typescript
