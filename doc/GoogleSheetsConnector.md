@@ -3,7 +3,7 @@
 `npm install reshuffle-google-sheets-connector`
 
 
-This is a [Reshuffle](dev.reshuffle.com) connector that allows you to Interact with online Google Sheets.
+This is a [Reshuffle](https://dev.reshuffle.com) connector that allows you to Interact with online Google Sheets.
 
 The connector is designed to work with Google Sheets in the form of a table,
 where the header row (first row) is defined.
