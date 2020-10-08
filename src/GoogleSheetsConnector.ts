@@ -318,7 +318,9 @@ export class GoogleSheetsConnector extends BaseConnector<
 
       await this.app.handleEvent(event.id, {
         ...event,
-        context: { oldRows, newRows, ...changes },
+        oldRows,
+        newRows,
+        ...changes,
       })
     }
   }
