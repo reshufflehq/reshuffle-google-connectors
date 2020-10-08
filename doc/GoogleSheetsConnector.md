@@ -20,8 +20,8 @@ const myGoogleSheetsConnector = new GoogleSheetsConnector(app, {
   sheetsId: '<your_sheetsId>',
 })
 
-const myHandler = (event) => {
-  // event.context is { oldRows, newRows, worksheetsRemoved: WorkSheetChanges[], worksheetsAdded: WorkSheetChanges[], worksheetsChanged: WorkSheetChanges[] }
+const myHandler = (event, app) => {
+  // event is { oldRows, newRows, worksheetsRemoved: WorkSheetChanges[], worksheetsAdded: WorkSheetChanges[], worksheetsChanged: WorkSheetChanges[] }
   // WorkSheetChanges is { worksheetId, rowsRemoved, rowsAdded, rowsChanged }
   console.log('New rows detected!')
   event.options.sheetIdOrTitle &&
@@ -29,7 +29,7 @@ const myHandler = (event) => {
       `'sheetIdOrTitle' is set in event options so it only checks for changes in sheet ${event.options.sheetIdOrTitle}`,
     )
 
-  event.context.newRows.forEach(({ worksheetId, rows }) => {
+  event.newRows.forEach(({ worksheetId, rows }) => {
     console.log(`workSheetId: ${worksheetId}`)
 
     rows.forEach((row, index) => {
@@ -39,11 +39,11 @@ const myHandler = (event) => {
     })
   })
 
-  event.context.worksheetsChanged[0] &&
-    event.context.worksheetsChanged[0].rowsAdded[0] &&
+  event.worksheetsChanged[0] &&
+    event.worksheetsChanged[0].rowsAdded[0] &&
     console.log(
       `Example of new line values ${JSON.stringify(
-        event.context.worksheetsChanged[0].rowsAdded[0],
+        event.worksheetsChanged[0].rowsAdded[0],
       )}`,
     )
 }
@@ -75,19 +75,17 @@ interface GoogleSheetsConnectorEventOptions {
 }
 ```
 
-Event is an object containing attribute `context`:
+Event is an object containing attribute:
 ```typescript
+oldRows: cellValue[]
+newRows: cellValue[]
+worksheetsRemoved: WorkSheetChanges[]
+worksheetsAdded: WorkSheetChanges[]
+worksheetsChanged: WorkSheetChanges[]
+
 export interface cellValue {
   headerName: string
   value: string
-}
-
-export interface context {
-  oldRows: cellValue[]
-  newRows: cellValue[]
-  worksheetsRemoved: WorkSheetChanges[]
-  worksheetsAdded: WorkSheetChanges[]
-  worksheetsChanged: WorkSheetChanges[]
 }
 
 export interface WorkSheetChanges {
@@ -105,11 +103,11 @@ export interface RowChange {
 
 ##### Example:
 ```js
-const myHandler = (event) => {
+const myHandler = (event, app) => {
   console.log('New rows detected!')
   event.options.sheetIdOrTitle && console.log(`'sheetIdOrTitle' is set in event options so it only checks for changes in sheet ${event.options.sheetIdOrTitle}`)
 
-  event.context.newRows.forEach(({worksheetId, rows}) => {
+  event.newRows.forEach(({worksheetId, rows}) => {
     console.log(`workSheetId: ${worksheetId}`)
 
     rows.forEach((row, index) => {
@@ -119,9 +117,9 @@ const myHandler = (event) => {
     })
   })
 
-  event.context.worksheetsChanged[0]
-    && event.context.worksheetsChanged[0].rowsAdded[0]
-    && console.log(`Example of new line values ${JSON.stringify(event.context.worksheetsChanged[0].rowsAdded[0])}`)
+  event.worksheetsChanged[0]
+    && event.worksheetsChanged[0].rowsAdded[0]
+    && console.log(`Example of new line values ${JSON.stringify(event.worksheetsChanged[0].rowsAdded[0])}`)
 }
 
 /** Trigger a handler when changes are detected in document <sheetsId> (it will check for changes every 10 seconds) */
