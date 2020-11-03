@@ -1,6 +1,6 @@
 ## Reshuffle Google Sheets Connector
 
-`npm install reshuffle-google-sheets-connector`
+`npm install reshuffle-google-connectors`
 
 
 This is a [Reshuffle](https://dev.reshuffle.com) connector that allows you to Interact with online Google Sheets.
