@@ -30,6 +30,7 @@
   "homepage": "https://github.com/reshufflehq/reshuffle-google-connectors#readme",
   "dependencies": {
     "@google-cloud/language": "^4.1.1",
+    "@google-cloud/text-to-speech": "^3.1.1",
     "@types/deep-equal": "^1.0.1",
     "@types/google-spreadsheet": "^3.0.1",
     "deep-equal": "^2.0.3",
