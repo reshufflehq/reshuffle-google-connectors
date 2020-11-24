@@ -1,8 +1,10 @@
 import { Reshuffle, BaseConnector, EventConfiguration } from 'reshuffle-base-connector'
 import TranslationServiceClient, { protos, v3 } from '@google-cloud/translate'
 
+
 export interface GoogleTranslateConnectorConfigOptions {
   credentials: string
+  location: string
 }
 
 export default class GoogleTranslateConnector extends BaseConnector<
@@ -11,23 +13,27 @@ export default class GoogleTranslateConnector extends BaseConnector<
   > {
 
   private client: v3.TranslationServiceClient
+  private projectId: string
+  private location: string
 
-  constructor(app: Reshuffle, options?: GoogleTranslateConnectorConfigOptions, id?: string) {
+  constructor(app: Reshuffle, options: GoogleTranslateConnectorConfigOptions, id?: string) {
     super(app, options, id)
-    this.client = new v3.TranslationServiceClient()
+    const credentials = JSON.parse(options.credentials)
+    this.client = new v3.TranslationServiceClient({ credentials })
+    this.projectId = credentials.project_id
+    this.location = options?.location || 'global'
   }
 
   async translate(
-    text: string,
-    projectId: string,
-    location: string,
-    mimeType: string,
+    text: string | string[],
     source: string,
     target: string,
+    location = this.location,
+    mimeType: string = 'text/plain'
   ) {
 
     const request = {
-      parent: `projects/${projectId}/locations/${location}`,
+      parent: `projects/${this.projectId}/locations/${location}`,
       contents: Array.isArray(text) ? text : [text],
       mimeType: mimeType,
       sourceLanguageCode: source,

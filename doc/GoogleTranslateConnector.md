@@ -1,4 +1,7 @@
-## Reshuffle Google Translate Connector
+# reshuffle-google-translate-connector
+
+
+### Reshuffle Google Translate Connector
 
 `npm install reshuffle-google-connectors`
 
@@ -27,19 +30,18 @@ Returns the translated text response from source to target language
 
 ```typescript
 translate(
-    text: string,
-    projectId: string, // Google Cloud Project Id, see https://cloud.google.com/resource-manager/docs/creating-managing-projects
+    text: string | string[],
+    source: string,    // e.g. 'en',
+    target: string,    // e.g. 'fr',    
     location: string,  // Project's location like 'global' or 'us-central1'
     mimeType: string,  // mime types: text/plain, text/html
-    source: string,    // e.g. 'en',
-    target: string,    // e.g. 'fr'
   ): Promise<google.cloud.translation.v3.TranslateTextResponse>
 ```
 
 ###### Example
 ```js
-  const connector = new GoogleTranslateConnector(app, null)
-  const result = await connector.translate(['Hello world', 'Text to translate'], 'project-01', 'global', 'text/plain', 'en', 'fr')
+  const connector = new GoogleTranslateConnector(app, { credentials: credentials, location: 'global' })
+  const result = await connector.translate(['Hello world', 'Text to translate'], 'en', 'fr', 'global', 'text/plain' )
   for (const translation of result.translations) {
     console.log(`Translation: ${translation.translatedText}`)
   }
@@ -55,7 +57,7 @@ sdk(): v3.TranslationServiceClient
 ###### Example
 ```js
   const [result] = await connector.sdk().translateText({
-      parent: `projects/project-01/locations/global`,
+      parent: `projects/<project-id>/locations/<location>`,
       contents: ['Hello world', 'Text to translate'],
       mimeType: 'text/plain',
       sourceLanguageCode: 'en',
@@ -65,3 +67,6 @@ sdk(): v3.TranslationServiceClient
       console.log(`Translation: ${translation.translatedText}`)
   }
 ```
+`<project-id>` - Google Cloud Project Id, see https://cloud.google.com/resource-manager/docs/creating-managing-projects
+
+`<location>` - Project's location like 'global' or 'us-central1'
