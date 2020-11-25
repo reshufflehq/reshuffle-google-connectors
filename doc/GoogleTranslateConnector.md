@@ -1,9 +1,13 @@
 # reshuffle-google-translate-connector
+[Code](https://github.com/reshufflehq/reshuffle-google-translate-connector) |  [npm](https://www.npmjs.com/package/reshuffle-google-translate-connector) | [Code sample](https://github.com/reshufflehq/reshuffle/tree/master/examples/google/translate)
 
+`npm install reshuffle-google-connectors`
+
+This connector uses [Official Node Google Translate Client](https://www.npmjs.com/package/@google-cloud/translate) package.
 
 ### Reshuffle Google Translate Connector
 
-`npm install reshuffle-google-connectors`
+
 
 _ES6 import_: `import { GoogleTranslateConnector } from 'reshuffle-google-connectors'` 
 
