@@ -29,8 +29,29 @@ N/A
 Returns the translated text response from source to target language
 
 ```typescript
-translate(
-    text: string | string[],
+translateText(
+    text: string,
+    source: string,    // e.g. 'en',
+    target: string,    // e.g. 'fr',    
+    location: string,  // Project's location like 'global' or 'us-central1'
+    mimeType: string,  // mime types: text/plain, text/html
+  ): Promise<string | undefined | null>
+```
+
+###### Example
+```js
+  const connector = new GoogleTranslateConnector(app, { credentials: credentials, location: 'global' })
+  const result = await connector.translateText(['Hello world', 'Text to translate'], 'en', 'fr', 'global', 'text/plain' )
+  console.log(`Translation: ${result}`)
+  
+```
+
+##### translateTexts
+Returns the translated array text response from source to target language
+
+```typescript
+translateTexts(
+    text: string[],
     source: string,    // e.g. 'en',
     target: string,    // e.g. 'fr',    
     location: string,  // Project's location like 'global' or 'us-central1'
@@ -41,7 +62,7 @@ translate(
 ###### Example
 ```js
   const connector = new GoogleTranslateConnector(app, { credentials: credentials, location: 'global' })
-  const result = await connector.translate(['Hello world', 'Text to translate'], 'en', 'fr', 'global', 'text/plain' )
+  const result = await connector.translateTexts(['Hello world', 'Text to translate'], 'en', 'fr', 'global', 'text/plain' )
   for (const translation of result.translations) {
     console.log(`Translation: ${translation.translatedText}`)
   }

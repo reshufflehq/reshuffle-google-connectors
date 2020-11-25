@@ -24,8 +24,32 @@ export default class GoogleTranslateConnector extends BaseConnector<
     this.location = options?.location || 'global'
   }
 
-  async translate(
-    text: string | string[],
+  async translateText(
+    text: string,
+    source: string,
+    target: string,
+    location = this.location,
+    mimeType: string = 'text/plain'
+  ) : Promise<string | undefined | null> {
+
+    const request = {
+      parent: `projects/${this.projectId}/locations/${location}`,
+      contents: [text],
+      mimeType: mimeType,
+      sourceLanguageCode: source,
+      targetLanguageCode: target,
+    }
+
+    try {
+      const [response] = await this.client.translateText(request)
+      return response.translations ? response.translations[0].translatedText : ''
+    } catch (error) {
+      this.app.getLogger().error(error.details)
+    }
+  }
+
+  async translateTexts(
+    text: string[],
     source: string,
     target: string,
     location = this.location,
@@ -34,7 +58,7 @@ export default class GoogleTranslateConnector extends BaseConnector<
 
     const request = {
       parent: `projects/${this.projectId}/locations/${location}`,
-      contents: Array.isArray(text) ? text : [text],
+      contents: text,
       mimeType: mimeType,
       sourceLanguageCode: source,
       targetLanguageCode: target,
