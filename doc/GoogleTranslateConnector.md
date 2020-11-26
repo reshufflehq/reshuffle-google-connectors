@@ -24,12 +24,21 @@ interface GoogleTranslateConnectorConfigOptions {
   credentials: string
 }
 ```
+
+### Table of Contents
+
+[Translate text - translateText](#translateText)
+
+[Translate text array - translateTexts](#translateTexts)
+
+[SDK](#sdk)
+
 #### Connector events
 N/A
 
 #### Connector actions
 
-##### translateText
+##### <a name="translateText"></a>translateText
 Returns the translated text response from source to target language
 
 ```typescript
@@ -50,7 +59,7 @@ translateText(
   
 ```
 
-##### translateTexts
+##### <a name="translateTexts"></a>translateTexts
 Returns the translated array text response from source to target language
 
 ```typescript
@@ -72,7 +81,7 @@ translateTexts(
   }
 ```
 
-##### sdk
+##### <a name="sdk"></a>sdk
 Returns the Google Translate Service Client
 ```typescript
 // See: https://googleapis.dev/nodejs/translate/latest/v3.TranslationServiceClient.html
