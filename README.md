@@ -14,6 +14,7 @@ connectors to some Google Cloud solutions.
 
 * [Google Sheets Connector](doc/GoogleSheetsConnector.md)
 * [Google Language Connector](doc/GoogleLanguageConnector.md)
+* [Google Translate Connector](doc/GoogleTranslateConnector.md)
 * [Google Text To Speech Connector](doc/GoogleTextToSpeechConnector.md)
 
 
