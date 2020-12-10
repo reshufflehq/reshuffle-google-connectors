@@ -18,7 +18,7 @@ const DEFAULT_CHECK_FOR_CHANGES_ELAPSE_TIME_MS = 10 * 1000 // 10 sec
 
 export interface GoogleSheetsConnectorConfigOptions {
   credentials: ServiceAccountCredentials
-  sheetsId: string
+  sheetId: string
 }
 
 export interface GoogleSheetsConnectorEventOptions {
@@ -67,7 +67,7 @@ export class GoogleSheetsConnector extends BaseConnector<
     options.interval = options.interval || DEFAULT_CHECK_FOR_CHANGES_ELAPSE_TIME_MS
 
     if (!eventId) {
-      eventId = `GoogleSheets/${this.configOptions?.sheetsId}/${options.interval}/${
+      eventId = `GoogleSheets/${this.configOptions?.sheetId}/${options.interval}/${
         options.sheetIdOrTitle ? `${options.sheetIdOrTitle}/` : ''
       }${this.id}`
     }
@@ -83,7 +83,7 @@ export class GoogleSheetsConnector extends BaseConnector<
     try {
       if (this.configOptions) {
         // spreadsheet key is the long id in the sheets URL
-        const doc = new GoogleSpreadsheet(this.configOptions.sheetsId)
+        const doc = new GoogleSpreadsheet(this.configOptions.sheetId)
 
         // use service account credentials
         await doc.useServiceAccountAuth(this.configOptions.credentials)
@@ -113,7 +113,7 @@ export class GoogleSheetsConnector extends BaseConnector<
         this.app
           .getLogger()
           .info(
-            `GoogleSheets ${this.configOptions.sheetsId} (sheet title: ${sheet?.title}) loaded (${sheet?.rowCount} rows)`,
+            `GoogleSheets ${this.configOptions.sheetId} (sheet title: ${sheet?.title}) loaded (${sheet?.rowCount} rows)`,
           )
 
         return sheet
@@ -258,7 +258,7 @@ export class GoogleSheetsConnector extends BaseConnector<
         .getLogger()
         .error(
           err,
-          `Google Sheets - error loading info [sheetsId: ${this.configOptions?.sheetsId}]`,
+          `Google Sheets - error loading info [sheetId: ${this.configOptions?.sheetId}]`,
         )
       throw err
     }
@@ -305,14 +305,14 @@ export class GoogleSheetsConnector extends BaseConnector<
 
     const [oldRecord, newRecord] = await this.app
       .getPersistentStore()
-      .update(this.configOptions.sheetsId, updater)
+      .update(this.configOptions.sheetId, updater)
 
     if (oldRecord && newRecord) {
       const oldRows = JSON.parse(oldRecord.json)
       const newRows = JSON.parse(newRecord.json)
 
-      const sheetsId = this.configOptions?.sheetsId
-      this.app.getLogger().info(`Google Sheets - changes detected for sheets ${sheetsId}`)
+      const sheetId = this.configOptions?.sheetId
+      this.app.getLogger().info(`Google Sheets - changes detected for sheets ${sheetId}`)
 
       const changes = detectChangesInSheet(oldRows, newRows)
 
