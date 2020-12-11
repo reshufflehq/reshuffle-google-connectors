@@ -17,8 +17,9 @@ import {
 const DEFAULT_CHECK_FOR_CHANGES_ELAPSE_TIME_MS = 10 * 1000 // 10 sec
 
 export interface GoogleSheetsConnectorConfigOptions {
-  credentials: ServiceAccountCredentials
-  sheetsId: string
+  credentials: ServiceAccountCredentials,
+  documentId?: string,
+  sheetsId?: string
 }
 
 export interface GoogleSheetsConnectorEventOptions {
@@ -38,10 +39,17 @@ export interface ReshuffleGoogleSheetsCell {
 export class GoogleSheetsConnector extends BaseConnector<
   GoogleSheetsConnectorConfigOptions,
   GoogleSheetsConnectorEventOptions
-> {
+  > {
   private readonly intervalIds: { [key: string]: NodeJS.Timer }
 
   constructor(app: Reshuffle, configOptions?: GoogleSheetsConnectorConfigOptions, id?: string) {
+
+    if (configOptions) {
+      if (configOptions.sheetsId && configOptions.documentId) {
+        console.warn("Ignoring sheetsId parameter. Using documentId")
+      }
+      configOptions.documentId = configOptions.documentId || configOptions.sheetsId
+    }
     super(app, configOptions, id)
     this.intervalIds = {}
   }
@@ -67,7 +75,7 @@ export class GoogleSheetsConnector extends BaseConnector<
     options.interval = options.interval || DEFAULT_CHECK_FOR_CHANGES_ELAPSE_TIME_MS
 
     if (!eventId) {
-      eventId = `GoogleSheets/${this.configOptions?.sheetsId}/${options.interval}/${
+      eventId = `GoogleSheets/${this.configOptions?.documentId}/${options.interval}/${
         options.sheetIdOrTitle ? `${options.sheetIdOrTitle}/` : ''
       }${this.id}`
     }
@@ -81,9 +89,9 @@ export class GoogleSheetsConnector extends BaseConnector<
 
   private async getSpreadSheetDocument(): Promise<GoogleSpreadsheet | undefined> {
     try {
-      if (this.configOptions) {
+      if (this.configOptions && this.configOptions.documentId) {
         // spreadsheet key is the long id in the sheets URL
-        const doc = new GoogleSpreadsheet(this.configOptions.sheetsId)
+        const doc = new GoogleSpreadsheet(this.configOptions.documentId)
 
         // use service account credentials
         await doc.useServiceAccountAuth(this.configOptions.credentials)
@@ -113,7 +121,7 @@ export class GoogleSheetsConnector extends BaseConnector<
         this.app
           .getLogger()
           .info(
-            `GoogleSheets ${this.configOptions.sheetsId} (sheet title: ${sheet?.title}) loaded (${sheet?.rowCount} rows)`,
+            `GoogleSheets ${this.configOptions.documentId} (sheet title: ${sheet?.title}) loaded (${sheet?.rowCount} rows)`,
           )
 
         return sheet
@@ -223,8 +231,8 @@ export class GoogleSheetsConnector extends BaseConnector<
     sheetIdOrTitle: string | number,
     values:
       | {
-          [header: string]: string | number | boolean
-        }
+      [header: string]: string | number | boolean
+    }
       | Array<string | number | boolean>,
     options?: { raw: boolean; insert: boolean },
   ): Promise<void> {
@@ -258,7 +266,7 @@ export class GoogleSheetsConnector extends BaseConnector<
         .getLogger()
         .error(
           err,
-          `Google Sheets - error loading info [sheetsId: ${this.configOptions?.sheetsId}]`,
+          `Google Sheets - error loading info [documentId: ${this.configOptions?.documentId}]`,
         )
       throw err
     }
@@ -267,8 +275,8 @@ export class GoogleSheetsConnector extends BaseConnector<
   private async getStringifiedRowsFromWorksheet(sheetIdOrTitle?: string | number) {
     const rows: RawWorkSheet[] = []
 
-    // TODO: Using sheetid as unique key assumes a 1-to-1 relation between
-    // sheetid and connector when there might be two connections to the
+    // TODO: Using sheet Id as unique key assumes a 1-to-1 relation between
+    // sheet Id and connector when there might be two connections to the
     // same sheet with different credentials. Providing a
     // runtime.getUniqueConnectorId might work better for this purpose
     const sheetInfo = await this.getInfo()
@@ -294,7 +302,7 @@ export class GoogleSheetsConnector extends BaseConnector<
   }
 
   public async onTimer(event: EventConfiguration): Promise<void> {
-    if (!this.configOptions) return
+    if (!this.configOptions || !this.configOptions.documentId) return
 
     const updater = async (oldRec: GoogleSheetsSnapshot) => {
       const newRec = {
@@ -305,14 +313,14 @@ export class GoogleSheetsConnector extends BaseConnector<
 
     const [oldRecord, newRecord] = await this.app
       .getPersistentStore()
-      .update(this.configOptions.sheetsId, updater)
+      .update(this.configOptions.documentId, updater)
 
     if (oldRecord && newRecord) {
       const oldRows = JSON.parse(oldRecord.json)
       const newRows = JSON.parse(newRecord.json)
 
-      const sheetsId = this.configOptions?.sheetsId
-      this.app.getLogger().info(`Google Sheets - changes detected for sheets ${sheetsId}`)
+      const documentId = this.configOptions?.documentId
+      this.app.getLogger().info(`Google Sheets - changes detected for sheets ${documentId}`)
 
       const changes = detectChangesInSheet(oldRows, newRows)
 

@@ -17,7 +17,7 @@ const myGoogleSheetsConnector = new GoogleSheetsConnector(app, {
     client_email: '<your_client_email>',
     private_key: '<your_private_key>',
   },
-  sheetsId: '<your_sheetsId>',
+  documentId: '<your_documentId>',
 })
 
 const myHandler = (event, app) => {
@@ -48,7 +48,7 @@ const myHandler = (event, app) => {
     )
 }
 
-/** Trigger a handler when changes are detected in document <sheetsId> (it will check for changes every 10 seconds) */
+/** Trigger a handler when changes are detected in document <sheetId> (it will check for changes every 10 seconds) */
 myGoogleSheetsConnector.on({}, myHandler)
 
 app.start()
@@ -58,7 +58,7 @@ app.start()
 ```typescript
 interface GoogleSheetsConnectorConfigOptions {
   credentials: ServiceAccountCredentials
-  sheetsId: string
+  sheetId: string
 }
 ```
 
@@ -122,7 +122,7 @@ const myHandler = (event, app) => {
     && console.log(`Example of new line values ${JSON.stringify(event.worksheetsChanged[0].rowsAdded[0])}`)
 }
 
-/** Trigger a handler when changes are detected in document <sheetsId> (it will check for changes every 10 seconds) */
+/** Trigger a handler when changes are detected in document <sheetId> (it will check for changes every 10 seconds) */
 myGoogleSheetsConnector.on({}, myHandler)
 
 /** Check for changes every minute (it overrides the default timer set to 10 sec) */
@@ -208,7 +208,7 @@ docInfo.sheetsByIndex.forEach(
 ```
 
 ##### sdk
-returns a Google Sheets instance for sheetsId
+returns a Google Sheets instance for sheetId
 
 See documentation in github: https://github.com/theoephraim/node-google-spreadsheet
 
