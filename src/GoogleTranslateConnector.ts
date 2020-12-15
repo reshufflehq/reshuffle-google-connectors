@@ -1,7 +1,6 @@
 import { Reshuffle, BaseConnector, EventConfiguration } from 'reshuffle-base-connector'
 import TranslationServiceClient, { protos, v3 } from '@google-cloud/translate'
 
-
 export interface GoogleTranslateConnectorConfigOptions {
   credentials: string
   location: string
@@ -10,8 +9,7 @@ export interface GoogleTranslateConnectorConfigOptions {
 export default class GoogleTranslateConnector extends BaseConnector<
   GoogleTranslateConnectorConfigOptions,
   null
-  > {
-
+> {
   private client: v3.TranslationServiceClient
   private projectId: string
   private location: string
@@ -29,9 +27,8 @@ export default class GoogleTranslateConnector extends BaseConnector<
     source: string,
     target: string,
     location = this.location,
-    mimeType: string = 'text/plain'
-  ) : Promise<string | undefined | null> {
-
+    mimeType = 'text/plain',
+  ): Promise<string | undefined | null> {
     const request = {
       parent: `projects/${this.projectId}/locations/${location}`,
       contents: [text],
@@ -53,9 +50,8 @@ export default class GoogleTranslateConnector extends BaseConnector<
     source: string,
     target: string,
     location = this.location,
-    mimeType: string = 'text/plain'
+    mimeType = 'text/plain',
   ) {
-
     const request = {
       parent: `projects/${this.projectId}/locations/${location}`,
       contents: text,
