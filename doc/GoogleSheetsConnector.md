@@ -17,7 +17,7 @@ const myGoogleSheetsConnector = new GoogleSheetsConnector(app, {
     client_email: '<your_client_email>',
     private_key: '<your_private_key>',
   },
-  sheetId: '<your_sheetId>',
+  documentId: '<your_documentId>',
 })
 
 const myHandler = (event, app) => {
