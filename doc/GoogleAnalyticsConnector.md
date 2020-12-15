@@ -68,7 +68,6 @@ const app = new Reshuffle()
 const gaConnector = new GoogleAnalyticsConnector(app, { trackingId: 'UA-XXXXXXXXX-Y' })
 ```
 
-
 ### Connector events
 N/A
 
