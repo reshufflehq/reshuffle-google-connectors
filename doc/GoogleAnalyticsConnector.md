@@ -4,9 +4,9 @@
 
 _ES6 import_: `import { GoogleAnalyticsConnector } from 'reshuffle-google-connectors'`
 
-This is a [Reshuffle](https://dev.reshuffle.com) connector that provides an Interface to the Google Analytics Client.
+This is a [Reshuffle](https://reshuffle.com) connector that provides an Interface to the Google Analytics Platform.
 
-This connector uses [Node Universal Analytics Client](https://www.npmjs.com/package/universal-analytics) package.
+This connector uses [Universal Analytics](https://www.npmjs.com/package/universal-analytics) package.
 
 #### Example
 ```js
