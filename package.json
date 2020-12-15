@@ -36,11 +36,13 @@
     "@types/deep-equal": "^1.0.1",
     "@types/google-spreadsheet": "^3.0.2",
     "@types/node-fetch": "^2.5.7",
+    "@types/universal-analytics": "^0.4.4",
     "analytics": "^0.6.2",
     "deep-equal": "^2.0.5",
     "google-spreadsheet": "^3.0.14",
     "node-fetch": "^2.6.1",
-    "reshuffle-base-connector": "^0.0.11"
+    "reshuffle-base-connector": "^0.0.11",
+    "universal-analytics": "^0.4.23"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.9.1",

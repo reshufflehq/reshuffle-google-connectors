@@ -1,102 +1,105 @@
-# reshuffle-google-analytics-connector
-[Code](https://github.com/reshufflehq/reshuffle-google-analytics-connector) |  [npm](https://www.npmjs.com/package/reshuffle-google-translate-connector) | [Code sample](https://github.com/reshufflehq/reshuffle/tree/master/examples/google/translate)
+## Reshuffle Google Text to Speech Connector
 
 `npm install reshuffle-google-connectors`
 
-### Reshuffle Google Analytics Connector
+_ES6 import_: `import { GoogleAnalyticsConnector } from 'reshuffle-google-connectors'`
 
-_ES6 import_: `import { GoogleAnalyticsConnector } from 'reshuffle-google-connectors'` 
+This is a [Reshuffle](https://dev.reshuffle.com) connector that provides an Interface to the Google Analytics Client.
 
-This is a [Reshuffle](https://dev.reshuffle.com) connector that provides an Interface to track events in Google Analytics.
+This connector uses [Node Universal Analytics Client](https://www.npmjs.com/package/universal-analytics) package.
 
-#### Setup
-You need a project in Google Cloud that has the Cloud Translation API enabled and credentials to make authenticated calls. 
-See more details [here](https://cloud.google.com/translate/docs/setup)
+#### Example
+```js
+const { GoogleAnalyticsConnector } = require('reshuffle-google-connectors')
+const app = new Reshuffle()
 
+const options = { trackingId: 'UA-XXXXXXXXX-Y' }
 
-#### Configuration Options:
-```typescript
-interface GoogleTranslateConnectorConfigOptions {
-  credentials: string
-}
+const gaConnector = new GoogleAnalyticsConnector(app, options)
+
+gaConnector.trackEvent('my category', 'my action') // Capture an event in Google Analytics
 ```
 
 ### Table of Contents
 
-[Translate text - translateText](#translateText)
+[Setup Google Analytics (get a tracking id)](#setup)
 
-[Translate text array - translateTexts](#translateTexts)
+[Configuration Options](#configuration)
 
-[SDK](#sdk)
+#### Connector Events
 
-#### Connector events
 N/A
 
-#### Connector actions
+#### Connector Actions
 
-##### <a name="translateText"></a>translateText
-Returns the translated text response from source to target language
+[Track Event](#trackevent)
+
+[Track Page View](#trackpageview)
+
+[SDK](#sdk) - Get a universal analytics client
+
+
+### <a name="setup"></a>Setup Google Analytics (get a tracking id)
+1. Log in to [Google Analytics Platform](https://analytics.google.com/analytics/web/)
+2. 'Admin' > 'Create a property'
+3. Enter a property name
+4. Click on 'Show Advanced Options'
+5. Switch on 'Create a Universal Analytics property'
+6. Select 'Create a Universal Analytics property only'
+7. In Website URL, use your Reshuffle runtime URL
+8. Click 'Next' then 'Create'
+9. Copy your tracking ID (e.g. UA-XXXXXXXXX-Y)
+10. Provide this tracking ID when creating your Reshuffle connector (see below instructions) 
+
+### <a name="configuration"></a>Configuration Options
+```typescript
+export interface GoogleAnalyticsConnectorConfigOptions {
+    trackingId: string // Google Analytics Tracking Identifier (e.g. UA-XXXXXXXXX-Y)
+    clientId?: string
+    uaOptions?: ua.VisitorOptions
+}
+```
+
+Example:
+```typescript
+const { GoogleAnalyticsConnector } = require('reshuffle-google-connectors')
+const app = new Reshuffle()
+
+const gaConnector = new GoogleAnalyticsConnector(app, { trackingId: 'UA-XXXXXXXXX-Y' })
+```
+
+
+### Connector events
+N/A
+
+#### <a name="trackevent"></a>Track Event
+
+For tracking custom events
+```typescript
+trackEvent(category: string, action: string, label?: string, value?: string|number) : Promise<void>
+```
+
+#### <a name="trackpageview"></a>Track Page View
+
+For tracking page views
+```typescript
+trackPageView(path: string, hostname?: string, title?: string): Promise<void>
+```
+
+#### <a name="sdk"></a>SDK
+
+Returns a Universal Analytics client ([See details on npm](https://www.npmjs.com/package/universal-analytics))
 
 ```typescript
-translateText(
-    text: string,
-    source: string,    // e.g. 'en',
-    target: string,    // e.g. 'fr',    
-    location: string,  // Project's location like 'global' or 'us-central1'
-    mimeType: string,  // mime types: text/plain, text/html
-  ): Promise<string | undefined | null>
+ sdk() : ua.Visitor
 ```
+See ua.Visitor class in [Universal Analytics Visitor type](https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/universal-analytics/index.d.ts#L375)
 
-###### Example
-```js
-  const connector = new GoogleTranslateConnector(app, { credentials: credentials, location: 'global' })
-  const result = await connector.translateText(['Hello world', 'Text to translate'], 'en', 'fr', 'global', 'text/plain' )
-  console.log(`Translation: ${result}`)
-  
-```
-
-##### <a name="translateTexts"></a>translateTexts
-Returns the translated array text response from source to target language
-
+Example using the sdk:
 ```typescript
-translateTexts(
-    text: string[],
-    source: string,    // e.g. 'en',
-    target: string,    // e.g. 'fr',    
-    location: string,  // Project's location like 'global' or 'us-central1'
-    mimeType: string,  // mime types: text/plain, text/html
-  ): Promise<google.cloud.translation.v3.TranslateTextResponse>
-```
+const app = new Reshuffle()
+const options = { trackingId: 'UA-XXXXXXXXX-Y' }
+const gaConnector = new GoogleAnalyticsConnector(app, options)
 
-###### Example
-```js
-  const connector = new GoogleTranslateConnector(app, { credentials: credentials, location: 'global' })
-  const result = await connector.translateTexts(['Hello world', 'Text to translate'], 'en', 'fr', 'global', 'text/plain' )
-  for (const translation of result.translations) {
-    console.log(`Translation: ${translation.translatedText}`)
-  }
+await gaConnector.sdk().event(category, action).send()
 ```
-
-##### <a name="sdk"></a>sdk
-Returns the Google Translate Service Client
-```typescript
-// See: https://googleapis.dev/nodejs/translate/latest/v3.TranslationServiceClient.html
-sdk(): v3.TranslationServiceClient
-```
-
-###### Example
-```js
-  const [result] = await connector.sdk().translateText({
-      parent: `projects/<project-id>/locations/<location>`,
-      contents: ['Hello world', 'Text to translate'],
-      mimeType: 'text/plain',
-      sourceLanguageCode: 'en',
-      targetLanguageCode: 'fr',
-  })
-  for (const translation of result.translations) {
-      console.log(`Translation: ${translation.translatedText}`)
-  }
-```
-`<project-id>` - Google Cloud Project Id, see https://cloud.google.com/resource-manager/docs/creating-managing-projects
-
-`<location>` - Project's location like 'global' or 'us-central1'
