@@ -39,10 +39,10 @@ export default class GoogleAnalyticsConnector extends BaseConnector<
     if (!path.startsWith('/')) {
       throw new Error("path should begin wih '/'")
     }
-    return title && hostname
-      ? this.analytics.pageview(path, hostname, title).send()
-      : hostname
-      ? this.analytics.pageview(path, hostname).send()
+    return hostname
+      ? title
+        ? this.analytics.pageview(path, hostname, title).send()
+        : this.analytics.pageview(path, hostname).send()
       : this.analytics.pageview(path).send()
   }
 
