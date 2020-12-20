@@ -186,7 +186,7 @@ rows.forEach(row => console.log(row))
 ```
 
 ##### addRow
-Get cells data for range in sheet by id|title
+Adds a new row to a sheet identified by its id|title
 
 ###### Example
 ```js
