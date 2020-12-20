@@ -15,12 +15,11 @@ export default class GoogleAnalyticsConnector extends BaseConnector<
 
   constructor(app: Reshuffle, options: GoogleAnalyticsConnectorConfigOptions, id?: string) {
     super(app, options, id)
-    this.analytics =
-      options.clientId && options.uaOptions
+    this.analytics = options.clientId
+      ? options.uaOptions
         ? ua(options.trackingId, options.clientId, options.uaOptions)
-        : options.clientId
-        ? ua(options.trackingId, options.clientId)
-        : ua(options.trackingId)
+        : ua(options.trackingId, options.clientId)
+      : ua(options.trackingId)
   }
 
   async trackEvent(
