@@ -17,8 +17,8 @@ import {
 const DEFAULT_CHECK_FOR_CHANGES_ELAPSE_TIME_MS = 10 * 1000 // 10 sec
 
 export interface GoogleSheetsConnectorConfigOptions {
-  credentials: ServiceAccountCredentials,
-  documentId?: string,
+  credentials: ServiceAccountCredentials
+  documentId?: string
   sheetsId?: string
 }
 
@@ -39,14 +39,13 @@ export interface ReshuffleGoogleSheetsCell {
 export class GoogleSheetsConnector extends BaseConnector<
   GoogleSheetsConnectorConfigOptions,
   GoogleSheetsConnectorEventOptions
-  > {
+> {
   private readonly intervalIds: { [key: string]: NodeJS.Timer }
 
   constructor(app: Reshuffle, configOptions?: GoogleSheetsConnectorConfigOptions, id?: string) {
-
     if (configOptions) {
       if (configOptions.sheetsId && configOptions.documentId) {
-        console.warn("Ignoring sheetsId parameter. Using documentId")
+        console.warn('Ignoring sheetsId parameter. Using documentId')
       }
       configOptions.documentId = configOptions.documentId || configOptions.sheetsId
     }
@@ -231,8 +230,8 @@ export class GoogleSheetsConnector extends BaseConnector<
     sheetIdOrTitle: string | number,
     values:
       | {
-      [header: string]: string | number | boolean
-    }
+          [header: string]: string | number | boolean
+        }
       | Array<string | number | boolean>,
     options?: { raw: boolean; insert: boolean },
   ): Promise<void> {
