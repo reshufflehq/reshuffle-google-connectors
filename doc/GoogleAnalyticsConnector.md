@@ -1,4 +1,4 @@
-## Reshuffle Google Text to Speech Connector
+## Reshuffle Google Analytics Connector
 
 `npm install reshuffle-google-connectors`
 
