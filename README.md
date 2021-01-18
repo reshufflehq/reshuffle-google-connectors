@@ -7,7 +7,7 @@
 
 # Google Connectors
 
-This package contains [Reshuffle](https://github.com/reshufflehq/reshuffle)
+This package contains [Reshuffle](https://reshuffle.com)
 connectors to some Google Cloud solutions.
 
 ## Connectors
