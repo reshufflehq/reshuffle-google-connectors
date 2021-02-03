@@ -24,7 +24,7 @@ export const extractCellData = (
       }
     : undefined
 
-export function detectChangesInSheet(prev: RawWorkSheet[], curr: RawWorkSheet[]): SheetChanges {
+export function detectChangesInSheet(prev: RawWorkSheet[], curr: RawWorkSheet[], keyColumn?: string): SheetChanges {
   const changes: SheetChanges = {
     worksheetsRemoved: [],
     worksheetsAdded: [],
@@ -38,7 +38,7 @@ export function detectChangesInSheet(prev: RawWorkSheet[], curr: RawWorkSheet[])
   }
   const commonWorksheets = Math.min(prev.length, curr.length)
   for (let i = 0; i < commonWorksheets; i++) {
-    const worksheetChanges = detectChangesInWorksheet(prev[i], curr[i])
+    const worksheetChanges = detectChangesInWorksheet(prev[i], curr[i], keyColumn)
     if (worksheetChanges) {
       changes.worksheetsChanged.push(worksheetChanges)
     }
@@ -47,6 +47,18 @@ export function detectChangesInSheet(prev: RawWorkSheet[], curr: RawWorkSheet[])
 }
 
 export function detectChangesInWorksheet(
+  prevRaw: RawWorkSheet,
+  currRaw: RawWorkSheet,
+  keyColumn?: string,
+): WorkSheetChanges | undefined {
+  if (keyColumn) {
+    return detectChangesByKeyColumn(prevRaw, currRaw, keyColumn)
+  } else {
+    return detectChangesByOrder(prevRaw, currRaw)
+  }
+}
+
+export function detectChangesByOrder(
   prevRaw: RawWorkSheet,
   currRaw: RawWorkSheet,
 ): WorkSheetChanges | undefined {
@@ -71,6 +83,76 @@ export function detectChangesInWorksheet(
     }
   }
   return changes
+}
+
+export function detectChangesByKeyColumn(
+  prevRaw: RawWorkSheet,
+  currRaw: RawWorkSheet,
+  keyColumn: string,
+): WorkSheetChanges | undefined {
+  const changes: WorkSheetChanges = {
+    worksheetId: currRaw.worksheetId,
+    rowsRemoved: [],
+    rowsAdded: [],
+    rowsChanged: [],
+  }
+
+  if (isDetectChangesByOrder(prevRaw, currRaw, keyColumn)) {
+    // keyColumn not found, can't continue with this function
+    return detectChangesByOrder(prevRaw, currRaw)
+  }
+
+  const current = getSheetRecordFromRawWorkSheet(currRaw, keyColumn)
+  const previous = getSheetRecordFromRawWorkSheet(prevRaw, keyColumn)
+
+  Object.keys(current).map( key => {
+    if (!previous[key]) {
+      changes.rowsAdded.push(current[key])
+    }
+    else {
+      const rowChanges = detectChangesRow(previous[key], current[key])
+      if (rowChanges) {
+        changes.rowsChanged.push(rowChanges)
+      }
+    }
+  })
+
+  Object.keys(previous).map( key => {
+    if (!current[key]) {
+      changes.rowsRemoved.push(previous[key])
+    }
+  })
+  return changes
+}
+
+export function getSheetRecordFromRawWorkSheet(raw: RawWorkSheet, keyColumn: string) {
+  const record: SheetRecord = {}
+  raw.rows.forEach(function (row: any) {
+    if (row[keyColumn]) {
+      record[row[keyColumn]] = row
+    }
+  })
+  return record
+}
+
+export function isDetectChangesByOrder(prevRaw: RawWorkSheet, currRaw: RawWorkSheet, keyColumn: string) {
+  let keyColumnIsMissing = false
+  prevRaw.rows.forEach(function (row: any) {
+    if (!row[keyColumn]) {
+      keyColumnIsMissing = true
+      return
+    }
+  })
+
+  if (!keyColumnIsMissing) {
+    currRaw.rows.forEach(function (row: any) {
+      if (!row[keyColumn]) {
+        keyColumnIsMissing = true
+        return
+      }
+    })
+  }
+  return keyColumnIsMissing
 }
 
 export const detectChangesRow = (prev: any, curr: any) =>
@@ -104,3 +186,5 @@ export interface RawWorkSheet {
   worksheetId: string
   rows: any[]
 }
+
+type SheetRecord = Record<string, any>

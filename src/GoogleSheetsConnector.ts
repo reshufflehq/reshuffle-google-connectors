@@ -24,7 +24,8 @@ export interface GoogleSheetsConnectorConfigOptions {
 
 export interface GoogleSheetsConnectorEventOptions {
   interval?: number
-  sheetIdOrTitle?: string
+  sheetIdOrTitle?: string,
+  keyColumn?: string
 }
 
 export interface ReshuffleGoogleSheetsCell {
@@ -321,7 +322,7 @@ export class GoogleSheetsConnector extends BaseConnector<
       const documentId = this.configOptions?.documentId
       this.app.getLogger().info(`Google Sheets - changes detected for sheets ${documentId}`)
 
-      const changes = detectChangesInSheet(oldRows, newRows)
+      const changes = detectChangesInSheet(oldRows, newRows, event.options.keyColumn)
 
       await this.app.handleEvent(event.id, {
         ...event,
