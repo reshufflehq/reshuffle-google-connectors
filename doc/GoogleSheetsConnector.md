@@ -72,6 +72,7 @@ You can trigger a handler on rows changed by providing the following options to 
 interface GoogleSheetsConnectorEventOptions {
   interval?: number
   sheetIdOrTitle?: string
+  keyColumn?: string
 }
 ```
 
@@ -134,7 +135,20 @@ myGoogleSheetsConnector.on({sheetIdOrTitle: 0}, myHandler)
 
 /** Check for changes only in a specific sheet by title and every 30 seconds */
 myGoogleSheetsConnector.on({sheetIdOrTitle: 'Sheet1', interval: 30 * 1000}, myHandler)
+
+/** Check for changes using a key column for more accuracy, see Known Issues below */
+myGoogleSheetsConnector.on({keyColumn: 'Identifier'}, myHandler)
 ```
+
+##### Known Issues:
+Since Google Sheets does not provide rows identifiers, it is hard to identify which events caused the rows changes,for example when deleting a row which is not at the bottom of the spreadsheet, the rows below are shifted up. This can be interpritated as an update of all the rows below including the "deleted" row and a deletion of the last row.
+These are the options to handle such cases:
+1. Add or delete rows just from the bottom of the spreadsheet.
+2. Consider the `event.oldRows` & `event.newRows`, these attributes will provide you all the information about the spreadsheet rows before and after the changes. Now it is up to you to decide how to handle the events.
+3. Set a Key column in your spreadsheet with a unique identifier and provide it's name as the `GoogleSheetsConnectorEventOptions.keyColumn`. Using this column the connector will make an accurate decision about the spreadsheet events.
+In case of duplicated identifiers only the last identifier's row will be considered.
+
+When using the `keyColumn` and having multiple sheets, the same column name should be used in all the sheets. In every sheet the column can have different types of identifiers but the column name should be the same, for example `keyColumn` is set to be 'RS-Identifier', in Sheet1 it can be email address while in Sheet2 it can be a serial number.
 
 #### Connector actions
 This connector provides all the common actions to interact with a Google Sheets document.
