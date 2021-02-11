@@ -97,7 +97,7 @@ export function detectChangesByKeyColumn(
     rowsChanged: [],
   }
 
-  if (isDetectChangesByOrder(prevRaw, currRaw, keyColumn)) {
+  if (isKeyColumnIsMissing(prevRaw, currRaw, keyColumn)) {
     // keyColumn not found, can't continue with this function
     return detectChangesByOrder(prevRaw, currRaw)
   }
@@ -135,24 +135,9 @@ export function getSheetRecordFromRawWorkSheet(raw: RawWorkSheet, keyColumn: str
   return record
 }
 
-export function isDetectChangesByOrder(prevRaw: RawWorkSheet, currRaw: RawWorkSheet, keyColumn: string) {
-  let keyColumnIsMissing = false
-  prevRaw.rows.forEach(function (row: any) {
-    if (!row[keyColumn]) {
-      keyColumnIsMissing = true
-      return
-    }
-  })
-
-  if (!keyColumnIsMissing) {
-    currRaw.rows.forEach(function (row: any) {
-      if (!row[keyColumn]) {
-        keyColumnIsMissing = true
-        return
-      }
-    })
-  }
-  return keyColumnIsMissing
+function isKeyColumnIsMissing(prevRaw: RawWorkSheet, currRaw: RawWorkSheet, keyColumn: string) {
+  return prevRaw.rows.filter((e) => !e.hasOwnProperty(keyColumn)).length > 0 
+    && currRaw.rows.filter( (e) => !e.hasOwnProperty(keyColumn)).length > 0
 }
 
 export const detectChangesRow = (prev: any, curr: any) =>

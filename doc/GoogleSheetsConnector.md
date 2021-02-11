@@ -141,12 +141,12 @@ myGoogleSheetsConnector.on({keyColumn: 'Identifier'}, myHandler)
 ```
 
 ##### Known Issues:
-Since Google Sheets does not provide rows identifiers, it is hard to identify which events caused the rows changes,for example when deleting a row which is not at the bottom of the spreadsheet, the rows below are shifted up. This can be interpritated as an update of all the rows below including the "deleted" row and a deletion of the last row.
+Since Google Sheets does not provide row identifiers, it is hard to identify which events caused the changes, for example when deleting a row which is not the last one in the spreadsheet, the rows below are shifted up. This can be interpreted as an update of all the rows below including the "deleted" row and a deletion of the last row.
 These are the options to handle such cases:
 1. Add or delete rows just from the bottom of the spreadsheet.
-2. Consider the `event.oldRows` & `event.newRows`, these attributes will provide you all the information about the spreadsheet rows before and after the changes. Now it is up to you to decide how to handle the events.
-3. Set a Key column in your spreadsheet with a unique identifier and provide it's name as the `GoogleSheetsConnectorEventOptions.keyColumn`. Using this column the connector will make an accurate decision about the spreadsheet events.
-In case of duplicated identifiers only the last identifier's row will be considered.
+2. Treat `event.oldRows` and `event.newRows` as before and after snapshots. You may compare these yourself to ascertain which changes your code is interested in.
+3. Set a Key column in your spreadsheet with a unique identifier and provide its name as the `GoogleSheetsConnectorEventOptions.keyColumn`. When this option is used, the connector can differentiate added and deleted rows based on these unique identifiers. This removes the ambiguity described above.
+Note that these identifiers must be unique. If duplicates exist in your spreadsheet, the connector will not behave as expected.
 
 When using the `keyColumn` and having multiple sheets, the same column name should be used in all the sheets. In every sheet the column can have different types of identifiers but the column name should be the same, for example `keyColumn` is set to be 'RS-Identifier', in Sheet1 it can be email address while in Sheet2 it can be a serial number.
 
